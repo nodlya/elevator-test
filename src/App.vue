@@ -1,15 +1,18 @@
 <template>
   <!--<img alt="Vue logo" src="./assets/logo.png">-->
-  <ElevatorComponent/>
+
+  <SchematicElevator/>
 </template>
 
 <script>
-import ElevatorComponent from './components/ElevatorComponent.vue'
+//import ElevatorComponent from './components/ElevatorComponent.vue'
+import SchematicElevator from './components/SchematicElevator.vue';
+
 
 export default {
   name: 'App',
   components: {
-    ElevatorComponent
+    SchematicElevator
   }
 }
 </script>

@@ -31,7 +31,7 @@ export default {
 
       let temp = this.currentFloor - floor;
 
-      const delay = 1000; // Задержка в миллисекундах
+      const delay = 1000;
 
       if (temp < 0) {
         let i = min;
