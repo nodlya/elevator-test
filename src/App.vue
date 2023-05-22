@@ -2,17 +2,25 @@
   <!--<img alt="Vue logo" src="./assets/logo.png">-->
 
   <SchematicElevator/>
+  <!-- <ElevatorCabin
+      :currentFloor="currentFloor"
+      :isMoving="isMoving"
+      :isAccelerating="isAccelerating"
+      :elevatorPosition="elevatorPosition"
+    /> -->
 </template>
 
 <script>
 //import ElevatorComponent from './components/ElevatorComponent.vue'
 import SchematicElevator from './components/SchematicElevator.vue';
+//import ElevatorCabin from './components/ElevatorCabin.vue';
 
 
 export default {
   name: 'App',
   components: {
-    SchematicElevator
+    SchematicElevator,
+    //ElevatorCabin
   }
 }
 </script>
