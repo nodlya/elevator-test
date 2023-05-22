@@ -4,13 +4,10 @@
       <div class="elevator">
         <div v-for="floor in floors" :key="floor" class="elevator-floor">
           <p>Этаж {{ floor }}</p>
+          <p v-if="floor === 1">Доставлено {{ deliveredPeople }}</p>
           <button v-if="floor > 1" class="elevator-floor-order" @click="requestFloor(floor)">
             <p v-if="floor > 1">{{ waiting[floors.indexOf(floor)] }}</p>
           </button>
-
-          <!-- <div class="elevator-cabin" v-if="currentFloor == floor">
-            <p>{{ peopleOnElevator }}</p>
-          </div> -->
         </div>
       </div>
       <MovingElevator class="box" :currentFloor="currentFloor" :targetFloor="targetFloor" :isMoving="isMoving"
@@ -32,10 +29,14 @@ export default {
       floors: [5, 4, 3, 2, 1],
       peopleOnElevator: 0,
       maxFloor: 1,
-      isMoving: false
+      isMoving: false,
+      deliveredPeople: 0
     };
   },
+
+
   watch: {
+
     waiting: {
       handler(newArr) {
         if (newArr.every(item => item === 0)) {
@@ -50,9 +51,11 @@ export default {
       },
       deep: true
     },
+
     currentFloor: {
       handler(floor) {
         if (floor === 1) {
+          this.deliveredPeople += this.peopleOnElevator;
           this.peopleOnElevator = 0;
           const unpickedFloor = this.getUnpickedFloor();
           if (unpickedFloor !== -1) {
@@ -62,20 +65,27 @@ export default {
       }
     }
   },
+
+
   methods: {
+
     requestFloor(floor) {
       this.waiting[this.floors.indexOf(floor)]++;
       this.maxFloor = Math.max(this.maxFloor, floor);
     },
+
+
     moveElevator(floor) {
       if (this.isMoving) return;
       this.isMoving = true;
       this.targetFloor = floor;
       const delay = 1000;
+
       if (floor === this.currentFloor) {
         this.isMoving = false;
         return;
       }
+
       const moveStep = () => {
         const stepSize = 1;
         const distance = Math.abs(floor - this.currentFloor);
@@ -87,25 +97,24 @@ export default {
           this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
           clearInterval(interval);
           this.isMoving = false;
-        } else {
+          const unpickedFloor = this.getUnpickedFloor();
 
+          if (unpickedFloor !== -1) {
+            this.moveElevator(unpickedFloor);
+          }
+
+        } else {
           this.currentFloor += direction * stepSize;
           this.peopleOnElevator += this.waiting[this.floors.indexOf(this.currentFloor)];
           this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
-
-          if (direction === 1) {
-            const unpickedFloor = this.getUnpickedFloorBelow(this.currentFloor);
-            if (unpickedFloor !== -1) {
-              clearInterval(interval);
-              this.isMoving = false;
-              this.moveElevator(unpickedFloor);
-            }
-          }
         }
+
       };
 
       const interval = setInterval(moveStep, delay);
     },
+
+
     getUnpickedFloor() {
       for (let i = this.currentFloor + 1; i <= this.maxFloor; i++) {
         if (this.waiting[this.floors.indexOf(i)] > 0) {
@@ -114,6 +123,8 @@ export default {
       }
       return -1;
     },
+
+
     getUnpickedFloorBelow(floor) {
       for (let i = floor - 1; i >= 1; i--) {
         if (this.waiting[this.floors.indexOf(i)] > 0) {
@@ -123,6 +134,8 @@ export default {
       return -1;
     }
   },
+
+
   components: { MovingElevator }
 };
 
@@ -184,8 +197,6 @@ export default {
   }
 }
 
-
-
 .elevator-cabin {
   width: 20px;
   height: 20px;
@@ -195,4 +206,5 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 </style>
