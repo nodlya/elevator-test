@@ -3,17 +3,23 @@
     <div class="mine">
       <div class="elevator">
         <div v-for="floor in floors" :key="floor" class="elevator-floor">
-          <button v-if="floor > 1" class="elevator-floor-order" @click="requestFloor(floor)"></button>
-          <p v-if="floor > 1">{{ waiting[floors.indexOf(floor)] }}</p>
-          <div class="elevator-cabin" v-if="currentFloor == floor">
+          <p>Этаж {{ floor }}</p>
+          <button v-if="floor > 1" class="elevator-floor-order" @click="requestFloor(floor)">
+            <p v-if="floor > 1">{{ waiting[floors.indexOf(floor)] }}</p>
+          </button>
+
+          <!-- <div class="elevator-cabin" v-if="currentFloor == floor">
             <p>{{ peopleOnElevator }}</p>
-          </div>
+          </div> -->
         </div>
       </div>
-      <MovingElevator class="box" :currentFloor="currentFloor" :targetFloor="targetFloor" :isMoving="isMoving"></MovingElevator>
+      <MovingElevator class="box" :currentFloor="currentFloor" :targetFloor="targetFloor" :isMoving="isMoving"
+        :peopleCount="peopleOnElevator">
+      </MovingElevator>
     </div>
   </div>
 </template>
+
 
 <script>
 import MovingElevator from './MovingElevator.vue';
@@ -62,44 +68,44 @@ export default {
       this.maxFloor = Math.max(this.maxFloor, floor);
     },
     moveElevator(floor) {
-    if (this.isMoving) return;
-    this.isMoving = true;
-    this.targetFloor = floor; 
-    const delay = 1000;
-    if (floor === this.currentFloor) {
-      this.isMoving = false;
-      return;
-    }
-    const moveStep = () => {
-  const stepSize = 1; 
-  const distance = Math.abs(floor - this.currentFloor);
-  const direction = Math.sign(floor - this.currentFloor);
-
-  if (distance <= stepSize) {
-    this.currentFloor = floor;
-    this.peopleOnElevator += this.waiting[this.floors.indexOf(this.currentFloor)];
-    this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
-    clearInterval(interval);
-    this.isMoving = false;
-  } else {
-
-    this.currentFloor += direction * stepSize;
-    this.peopleOnElevator += this.waiting[this.floors.indexOf(this.currentFloor)];
-    this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
-
-    if (direction === 1) {
-      const unpickedFloor = this.getUnpickedFloorBelow(this.currentFloor);
-      if (unpickedFloor !== -1) {
-        clearInterval(interval);
+      if (this.isMoving) return;
+      this.isMoving = true;
+      this.targetFloor = floor;
+      const delay = 1000;
+      if (floor === this.currentFloor) {
         this.isMoving = false;
-        this.moveElevator(unpickedFloor);
+        return;
       }
-    }
-  }
-};
+      const moveStep = () => {
+        const stepSize = 1;
+        const distance = Math.abs(floor - this.currentFloor);
+        const direction = Math.sign(floor - this.currentFloor);
 
-    const interval = setInterval(moveStep, delay);
-  },
+        if (distance <= stepSize) {
+          this.currentFloor = floor;
+          this.peopleOnElevator += this.waiting[this.floors.indexOf(this.currentFloor)];
+          this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
+          clearInterval(interval);
+          this.isMoving = false;
+        } else {
+
+          this.currentFloor += direction * stepSize;
+          this.peopleOnElevator += this.waiting[this.floors.indexOf(this.currentFloor)];
+          this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
+
+          if (direction === 1) {
+            const unpickedFloor = this.getUnpickedFloorBelow(this.currentFloor);
+            if (unpickedFloor !== -1) {
+              clearInterval(interval);
+              this.isMoving = false;
+              this.moveElevator(unpickedFloor);
+            }
+          }
+        }
+      };
+
+      const interval = setInterval(moveStep, delay);
+    },
     getUnpickedFloor() {
       for (let i = this.currentFloor + 1; i <= this.maxFloor; i++) {
         if (this.waiting[this.floors.indexOf(i)] > 0) {
@@ -131,15 +137,16 @@ export default {
   height: 100vh;
 }
 
-.mine{
+.mine {
   display: flex;
   flex-direction: row;
   align-items: end;
+  background-color: #f0f0f0;
+  height: 65%;
 }
 
 .elevator {
   width: 200px;
-  background-color: #f0f0f0;
   padding: 20px;
   border-radius: 4px;
   text-align: center;
@@ -155,7 +162,29 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  gap: 10px;
 }
+
+.elevator-floor-order {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+
+  :hover::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    border-radius: 50%;
+    background-color: #7d7d7d;
+  }
+}
+
+
 
 .elevator-cabin {
   width: 20px;
