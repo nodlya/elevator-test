@@ -10,8 +10,7 @@
           </button>
         </div>
       </div>
-      <MovingElevator class="box" :currentFloor="currentFloor" :isMoving="isMoving"
-        :peopleCount="peopleOnElevator">
+      <MovingElevator class="box" :currentFloor="currentFloor" :isMoving="isMoving" :peopleCount="peopleOnElevator">
       </MovingElevator>
     </div>
   </div>
@@ -85,6 +84,7 @@ export default {
     moveElevator(floor) {
       if (this.isMoving) return;
       this.isMoving = true;
+      this.targetFloor = floor;
       const delay = 1000;
 
       const interval = setInterval(() => {
@@ -98,12 +98,21 @@ export default {
           this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
           clearInterval(interval);
           this.isMoving = false;
-          const nextFloor = this.getNextFloor(this.currentFloor, true);
 
-          if (nextFloor !== -1) {
+          if (floor === this.maxFloor && floor !== 1) {
+            const nextFloor = 1;
             this.moveElevator(nextFloor);
+          } else if (this.currentFloor === 1 && this.maxFloor > 1) {
+            const nextFloorAbove = this.getNextFloor(this.currentFloor, true);
+            if (nextFloorAbove !== -1) {
+              this.moveElevator(nextFloorAbove);
+            }
+          } else {
+            const nextFloor = this.getNextFloor(this.currentFloor, true); // Добавлен флаг true
+            if (nextFloor !== -1) {
+              this.moveElevator(nextFloor);
+            }
           }
-
         } else {
           this.currentFloor += direction * stepSize;
           this.peopleOnElevator += this.waiting[this.floors.indexOf(this.currentFloor)];
@@ -111,6 +120,7 @@ export default {
         }
       }, delay);
     },
+
 
     getNextFloor(floor, above) {
       const startIndex = above ? floor + 1 : floor - 1;
