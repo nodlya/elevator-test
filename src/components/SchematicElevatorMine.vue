@@ -108,7 +108,7 @@ export default {
               this.moveElevator(nextFloorAbove);
             }
           } else {
-            const nextFloor = this.getNextFloor(this.currentFloor, true); // Добавлен флаг true
+            const nextFloor = this.getNextFloor(this.currentFloor, true); 
             if (nextFloor !== -1) {
               this.moveElevator(nextFloor);
             }
