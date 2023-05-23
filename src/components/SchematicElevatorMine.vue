@@ -104,7 +104,7 @@ export default {
           if (nextFloor !== -1) {
             this.moveElevator(nextFloor);
           }
-          
+
         } else {
           this.currentFloor += direction * stepSize;
           this.peopleOnElevator += this.waiting[this.floors.indexOf(this.currentFloor)];
@@ -137,7 +137,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100%;
 }
 
 .mine {
@@ -145,7 +145,8 @@ export default {
   flex-direction: row;
   align-items: end;
   background-color: #f0f0f0;
-  height: 65%;
+  
+  height: auto;
 }
 
 .elevator {
