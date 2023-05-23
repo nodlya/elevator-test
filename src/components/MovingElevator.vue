@@ -14,11 +14,6 @@ export default {
       required: true
     },
 
-    targetFloor: {
-      type: Number,
-      required: true
-    },
-
     durationPerFloor: {
       type: Number,
       default: 1000

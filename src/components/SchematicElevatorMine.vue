@@ -10,7 +10,7 @@
           </button>
         </div>
       </div>
-      <MovingElevator class="box" :currentFloor="currentFloor" :targetFloor="targetFloor" :isMoving="isMoving"
+      <MovingElevator class="box" :currentFloor="currentFloor" :isMoving="isMoving"
         :peopleCount="peopleOnElevator">
       </MovingElevator>
     </div>
@@ -85,7 +85,6 @@ export default {
     moveElevator(floor) {
       if (this.isMoving) return;
       this.isMoving = true;
-      this.targetFloor = floor;
       const delay = 1000;
 
       const interval = setInterval(() => {
@@ -145,7 +144,6 @@ export default {
   flex-direction: row;
   align-items: end;
   background-color: #f0f0f0;
-  
   height: auto;
 }
 
