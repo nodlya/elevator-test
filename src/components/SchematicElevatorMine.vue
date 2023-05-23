@@ -10,7 +10,7 @@
           </button>
         </div>
       </div>
-      <MovingElevator class="box" :currentFloor="currentFloor" :isMoving="isMoving" :peopleCount="peopleOnElevator">
+      <MovingElevator class="box" :currentFloor="currentFloor" :peopleCount="peopleOnElevator">
       </MovingElevator>
     </div>
   </div>

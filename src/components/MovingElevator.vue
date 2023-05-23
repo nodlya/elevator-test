@@ -14,11 +14,6 @@ export default {
       required: true
     },
 
-    durationPerFloor: {
-      type: Number,
-      default: 1000
-    },
-
     peopleCount: {
       type: Number,
       required: true
@@ -31,7 +26,6 @@ export default {
 
       return {
         transform: `translateY(${translateY})`,
-        transition: `transform ${this.durationPerFloor}ms ease-in-out`
       };
     }
   }
