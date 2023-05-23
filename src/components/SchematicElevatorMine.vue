@@ -17,7 +17,6 @@
   </div>
 </template>
 
-
 <script>
 import MovingElevator from './MovingElevator.vue';
 
@@ -34,19 +33,19 @@ export default {
     };
   },
 
-
   watch: {
-
     waiting: {
       handler(newArr) {
         if (newArr.every(item => item === 0)) {
-          this.moveElevator(1);
-        }
-        else if (this.currentFloor < this.maxFloor) {
-          this.moveElevator(this.maxFloor);
-        }
-        else {
-          this.moveElevator(1);
+          const nextFloor = this.getNextFloor(this.currentFloor, false);
+          if (nextFloor !== -1) {
+            this.moveElevator(nextFloor);
+          }
+        } else {
+          const nextFloor = this.getNextFloor(this.currentFloor, true);
+          if (nextFloor !== -1) {
+            this.moveElevator(nextFloor);
+          }
         }
       },
       deep: true
@@ -57,23 +56,31 @@ export default {
         if (floor === 1) {
           this.deliveredPeople += this.peopleOnElevator;
           this.peopleOnElevator = 0;
-          const unpickedFloor = this.getUnpickedFloor();
-          if (unpickedFloor !== -1) {
-            this.moveElevator(unpickedFloor);
+          const nextFloor = this.getNextFloor(this.currentFloor, true);
+
+          if (nextFloor !== -1) {
+            this.moveElevator(nextFloor);
+
+          } else {
+            const nextFloorBelow = this.getNextFloor(this.currentFloor, false);
+
+            if (nextFloorBelow !== -1) {
+              this.moveElevator(nextFloorBelow);
+            }
           }
+        }
+        else if (this.isMoving && floor < this.currentFloor) {
+          return;
         }
       }
     }
   },
 
-
   methods: {
-
     requestFloor(floor) {
       this.waiting[this.floors.indexOf(floor)]++;
       this.maxFloor = Math.max(this.maxFloor, floor);
     },
-
 
     moveElevator(floor) {
       if (this.isMoving) return;
@@ -81,12 +88,7 @@ export default {
       this.targetFloor = floor;
       const delay = 1000;
 
-      if (floor === this.currentFloor) {
-        this.isMoving = false;
-        return;
-      }
-
-      const moveStep = () => {
+      const interval = setInterval(() => {
         const stepSize = 1;
         const distance = Math.abs(floor - this.currentFloor);
         const direction = Math.sign(floor - this.currentFloor);
@@ -97,49 +99,37 @@ export default {
           this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
           clearInterval(interval);
           this.isMoving = false;
-          const unpickedFloor = this.getUnpickedFloor();
+          const nextFloor = this.getNextFloor(this.currentFloor, true);
 
-          if (unpickedFloor !== -1) {
-            this.moveElevator(unpickedFloor);
+          if (nextFloor !== -1) {
+            this.moveElevator(nextFloor);
           }
-
+          
         } else {
           this.currentFloor += direction * stepSize;
           this.peopleOnElevator += this.waiting[this.floors.indexOf(this.currentFloor)];
           this.waiting[this.floors.indexOf(this.currentFloor)] = 0;
         }
-
-      };
-
-      const interval = setInterval(moveStep, delay);
+      }, delay);
     },
 
+    getNextFloor(floor, above) {
+      const startIndex = above ? floor + 1 : floor - 1;
+      const endIndex = above ? this.maxFloor : 1;
+      const step = above ? 1 : -1;
 
-    getUnpickedFloor() {
-      for (let i = this.currentFloor + 1; i <= this.maxFloor; i++) {
+      for (let i = startIndex; above ? i <= endIndex : i >= endIndex; i += step) {
         if (this.waiting[this.floors.indexOf(i)] > 0) {
           return i;
         }
       }
-      return -1;
+
+      return above ? -1 : 1;
     },
-
-
-    getUnpickedFloorBelow(floor) {
-      for (let i = floor - 1; i >= 1; i--) {
-        if (this.waiting[this.floors.indexOf(i)] > 0) {
-          return i;
-        }
-      }
-      return -1;
-    }
   },
-
 
   components: { MovingElevator }
 };
-
-
 </script>
 
 <style lang="scss">
@@ -206,5 +196,4 @@ export default {
   align-items: center;
   justify-content: center;
 }
-
 </style>
